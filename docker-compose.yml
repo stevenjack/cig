@@ -6,6 +6,3 @@ dev:
     - .:/go/src/github.com/stevenjack/cig
     - ~/Projects:/projects
     - cig.yaml:/root/cig.yaml
-
-#docker run -v /Users/stevenjack/cig.yaml:/root/cig.yaml -v ~/Projects:/projects -v /Users/stevenjack/Projects/Personal/go-packages/src/github.com/stevenjack/cig:/go/src/github.com/stevenjack/cig -w /go/src/github.com/stevenjack/cig -it smaj/cig go run cig.go
-  
