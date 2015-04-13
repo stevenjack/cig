@@ -38,30 +38,37 @@ func main() {
 
 		var channel = make(chan string)
 
+		fileCount := 0
+
 		for _, v := range paths {
 			files, _ := ioutil.ReadDir(v.(string))
-			for i, f := range files {
+			fileCount += len(files)
+			for _, f := range files {
 				if f.IsDir() {
-					go checkRepo(v.(string)+"/"+f.Name(), channel, i, len(files))
+					go checkRepo(v.(string)+"/"+f.Name(), channel)
 				}
 			}
 		}
 
+		count := 0
+
 		for {
 			entry := <-channel
-			if entry == "exit" {
-				//				os.Exit(0)
+			if entry == "complete" {
+				count++
+				if count == fileCount {
+					os.Exit(0)
+				}
 			} else {
 				fmt.Printf(entry)
 			}
 		}
-
 	}
 
 	app.Run(os.Args)
 }
 
-func checkRepo(path string, channel chan string, current int, size int) {
+func checkRepo(path string, channel chan string) {
 	repoPath := flag.String("repo"+path, path, "path to the git repository")
 	flag.Parse()
 	repo, err := git.OpenRepository(*repoPath)
@@ -82,9 +89,7 @@ func checkRepo(path string, channel chan string, current int, size int) {
 		branch := r.FindStringSubmatch(currentBranch.Name())[1]
 
 		_, ref, err := repo.RevparseExt(branch)
-		//		check(err)
 		_, ref_two, err := repo.RevparseExt(fmt.Sprintf("origin/%v", branch))
-		//		check(err)
 
 		if ((ref != nil && ref_two != nil) && ref.Target().String() != ref_two.Target().String()) || entryCount > 0 {
 			channel <- fmt.Sprintf("\n%v (%v)\n", path, branch)
@@ -99,9 +104,7 @@ func checkRepo(path string, channel chan string, current int, size int) {
 		if entryCount > 0 {
 			channel <- color.RedString(fmt.Sprintf("%v file(s) changed/staged\n", entryCount))
 		}
-
-		if (current + 1) == size {
-			channel <- "exit"
-		}
 	}
+	repo = nil
+	channel <- "complete"
 }
