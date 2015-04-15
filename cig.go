@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/user"
 	"regexp"
+	"sync"
 )
 
 func check(e error) {
@@ -37,38 +38,35 @@ func main() {
 		check(err)
 
 		var channel = make(chan string)
+		var wg sync.WaitGroup
 
-		fileCount := 0
+		go output(channel)
 
-		for _, v := range paths {
+		for k, v := range paths {
 			files, _ := ioutil.ReadDir(v.(string))
-			fileCount += len(files)
+			fmt.Printf("\nChecking '%s' repos...\n", k)
 			for _, f := range files {
 				if f.IsDir() {
-					go checkRepo(v.(string)+"/"+f.Name(), channel)
+					wg.Add(1)
+					go checkRepo(v.(string)+"/"+f.Name(), channel, &wg)
 				}
 			}
+			wg.Wait()
 		}
 
-		count := 0
-
-		for {
-			entry := <-channel
-			if entry == "complete" {
-				count++
-				if count == fileCount {
-					os.Exit(0)
-				}
-			} else {
-				fmt.Printf(entry)
-			}
-		}
+		wg.Wait()
 	}
-
 	app.Run(os.Args)
 }
 
-func checkRepo(path string, channel chan string) {
+func output(channel chan string) {
+	for {
+		entry := <-channel
+		fmt.Printf(entry)
+	}
+}
+
+func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 	repoPath := flag.String("repo"+path, path, "path to the git repository")
 	flag.Parse()
 	repo, err := git.OpenRepository(*repoPath)
@@ -91,20 +89,23 @@ func checkRepo(path string, channel chan string) {
 		_, ref, err := repo.RevparseExt(branch)
 		_, ref_two, err := repo.RevparseExt(fmt.Sprintf("origin/%v", branch))
 
-		if ((ref != nil && ref_two != nil) && ref.Target().String() != ref_two.Target().String()) || entryCount > 0 {
-			channel <- fmt.Sprintf("\n%v (%v)\n", path, branch)
-		}
+		changes := []string{}
 
-		if ref != nil && ref_two != nil {
-			if ref.Target().String() != ref_two.Target().String() {
-				channel <- color.RedString("Push to master needed\n")
-			}
+		if ref != nil && ref_two != nil && ref.Target().String() != ref_two.Target().String() {
+			changes = append(changes, color.BlueString(" P"))
 		}
 
 		if entryCount > 0 {
-			channel <- color.RedString(fmt.Sprintf("%v file(s) changed/staged\n", entryCount))
+			changes = append(changes, color.RedString(fmt.Sprintf(" M(%v)", entryCount)))
+		}
+
+		if len(changes) > 0 {
+			channel <- fmt.Sprintf("- %v (%v)", path, branch)
+			for _, change := range changes {
+				channel <- change
+			}
+			channel <- "\n"
 		}
 	}
-	repo = nil
-	channel <- "complete"
+	wg.Done()
 }
