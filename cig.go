@@ -86,12 +86,12 @@ func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 		r := regexp.MustCompile("refs/heads/([/a-z-0-9_]+)")
 		branch := r.FindStringSubmatch(currentBranch.Name())[1]
 
-		_, ref, err := repo.RevparseExt(branch)
-		_, ref_two, err := repo.RevparseExt(fmt.Sprintf("origin/%v", branch))
+		_, local, err := repo.RevparseExt(branch)
+		_, remote, err := repo.RevparseExt(fmt.Sprintf("origin/%v", branch))
 
 		changes := []string{}
 
-		if ref != nil && ref_two != nil && ref.Target().String() != ref_two.Target().String() {
+		if local != nil && remote != nil && local.Target().String() != remote.Target().String() {
 			changes = append(changes, color.BlueString(" P"))
 		}
 
