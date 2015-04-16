@@ -13,6 +13,7 @@ import (
 	"os/user"
 	"regexp"
 	"sync"
+  "strings"
 )
 
 func check(e error) {
@@ -76,22 +77,23 @@ func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 	opts.Show = git.StatusShowIndexAndWorkdir
 	opts.Flags = git.StatusOptIncludeUntracked | git.StatusOptRenamesHeadToIndex | git.StatusOptSortCaseSensitively
 
-	var count = "1"
-	exists, err := exists(fmt.Sprintf("%v/.git"))
+	exists, err := exists(fmt.Sprintf("%v/.git", path))
 
 	if exists {
 
-		cmd := exec.Command("git ls-files | wc -l")
-		stdout, err := cmd.Output()
+		modified_files := exec.Command("git", "ls-files")
+    modified_files.Dir = path
+
+		stdout, err := modified_files.Output()
 
 		if err != nil {
 			println(err.Error())
 			return
 		}
 
-		count = int(stdout)
+    split_strings := strings.Split(fmt.Sprintf("%s", stdout), "\n")
 
-		fmt.Sprintf("Count is: %v", count)
+    channel <- fmt.Sprintf("Modified files: %s\n", split_strings)
 	}
 
 	if err == nil {

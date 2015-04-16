@@ -2,7 +2,7 @@ FROM golang:1.3
 MAINTAINER Steven Jack <stevenmajack@gmail.com>
 
 RUN apt-get update
-RUN apt-get install cmake pkg-config -y
+RUN apt-get install cmake pkg-config git -y
 
 WORKDIR /usr/src/go/src
 RUN GOOS=darwin GOARCH=amd64 CGO_ENABLED=1 ./make.bash --no-clean || true
