@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"os/user"
 	"regexp"
 	"sync"
@@ -75,6 +76,24 @@ func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 	opts.Show = git.StatusShowIndexAndWorkdir
 	opts.Flags = git.StatusOptIncludeUntracked | git.StatusOptRenamesHeadToIndex | git.StatusOptSortCaseSensitively
 
+	var count = "1"
+	exists, err := exists(fmt.Sprintf("%v/.git"))
+
+	if exists {
+
+		cmd := exec.Command("git ls-files | wc -l")
+		stdout, err := cmd.Output()
+
+		if err != nil {
+			println(err.Error())
+			return
+		}
+
+		count = int(stdout)
+
+		fmt.Sprintf("Count is: %v", count)
+	}
+
 	if err == nil {
 		statusList, err := repo.StatusList(opts)
 		check(err)
@@ -108,4 +127,15 @@ func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 		}
 	}
 	wg.Done()
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
