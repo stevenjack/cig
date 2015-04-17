@@ -29,7 +29,7 @@ func main() {
 	app.Action = func(c *cli.Context) {
 		paths := make(map[interface{}]interface{})
 		home_dir, err := homedir.Dir()
-		path := fmt.Sprintf("%s/cig.yaml", home_dir)
+		path := fmt.Sprintf("%s/.cig.yaml", home_dir)
 
 		data, err := ioutil.ReadFile(path)
 		check(err)
