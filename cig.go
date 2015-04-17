@@ -1,19 +1,18 @@
 package main
 
 import (
-	"flag"
+	"bytes"
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/fatih/color"
-	"github.com/libgit2/git2go"
+	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"os/user"
-	"regexp"
+	"strconv"
+	"strings"
 	"sync"
-  "strings"
 )
 
 func check(e error) {
@@ -29,9 +28,8 @@ func main() {
 
 	app.Action = func(c *cli.Context) {
 		paths := make(map[interface{}]interface{})
-		usr, _ := user.Current()
-		dir := usr.HomeDir
-		path := dir + "/cig.yaml"
+		home_dir, err := homedir.Dir()
+		path := fmt.Sprintf("%s/cig.yaml", home_dir)
 
 		data, err := ioutil.ReadFile(path)
 		check(err)
@@ -69,64 +67,62 @@ func output(channel chan string) {
 }
 
 func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
-	repoPath := flag.String("repo"+path, path, "path to the git repository")
-	flag.Parse()
-	repo, err := git.OpenRepository(*repoPath)
-
-	opts := &git.StatusOptions{}
-	opts.Show = git.StatusShowIndexAndWorkdir
-	opts.Flags = git.StatusOptIncludeUntracked | git.StatusOptRenamesHeadToIndex | git.StatusOptSortCaseSensitively
-
 	exists, err := exists(fmt.Sprintf("%v/.git", path))
 
 	if exists {
+		modified_files := exec.Command("git", "status", "-s")
+		modified_files.Dir = path
+		count := exec.Command("wc", "-l")
+		count.Dir = path
 
-		modified_files := exec.Command("git", "ls-files")
-    modified_files.Dir = path
+		stdout, _ := modified_files.StdoutPipe()
+		modified_files.Start()
+		count.Stdin = stdout
 
-		stdout, err := modified_files.Output()
+		count_out, _ := count.Output()
 
 		if err != nil {
 			println(err.Error())
 			return
 		}
 
-    split_strings := strings.Split(fmt.Sprintf("%s", stdout), "\n")
-
-    channel <- fmt.Sprintf("Modified files: %s\n", split_strings)
-	}
-
-	if err == nil {
-		statusList, err := repo.StatusList(opts)
-		check(err)
-
-		entryCount, err := statusList.EntryCount()
-		check(err)
-
-		currentBranch, err := repo.Head()
-		r := regexp.MustCompile("refs/heads/([/a-z-0-9_]+)")
-		branch := r.FindStringSubmatch(currentBranch.Name())[1]
-
-		_, local, err := repo.RevparseExt(branch)
-		_, remote, err := repo.RevparseExt(fmt.Sprintf("origin/%v", branch))
+		modified, _ := strconv.ParseInt(strings.TrimSpace(string(count_out[:])), 0, 64)
 
 		changes := []string{}
 
-		if local != nil && remote != nil && local.Target().String() != remote.Target().String() {
+		if modified > 0 {
+			changes = append(changes, color.RedString(fmt.Sprintf(" M(%d)", modified)))
+		}
+
+		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+		branch.Dir = path
+		bstdout, _ := branch.Output()
+		branch_name := strings.TrimSpace(string(bstdout[:]))
+
+		local := exec.Command("git", "rev-parse", branch_name)
+		local.Dir = path
+		lstdout, _ := local.Output()
+		local_ref := strings.TrimSpace(string(lstdout[:]))
+
+		remote := exec.Command("git", "rev-parse", fmt.Sprintf("origin/%s", branch_name))
+		remote.Dir = path
+		rstdout, err := remote.Output()
+		remote_ref := strings.TrimSpace(string(rstdout[:]))
+
+		if err == nil && remote_ref != local_ref {
 			changes = append(changes, color.BlueString(" P"))
 		}
 
-		if entryCount > 0 {
-			changes = append(changes, color.RedString(fmt.Sprintf(" M(%v)", entryCount)))
+		if len(changes) > 0 {
+			var buffer bytes.Buffer
+
+			buffer.WriteString(fmt.Sprintf("- %s (%s)", path, branch_name))
+			for _, change := range changes {
+				buffer.WriteString(change)
+			}
+			channel <- buffer.String() + "\n"
 		}
 
-		if len(changes) > 0 {
-			channel <- fmt.Sprintf("- %v (%v)", path, branch)
-			for _, change := range changes {
-				channel <- change
-			}
-			channel <- "\n"
-		}
 	}
 	wg.Done()
 }
