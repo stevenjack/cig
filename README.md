@@ -8,7 +8,7 @@
 	Can I go? CLI app for checking the state of your git repositories.
 </p>
 
-## Setup
+### Setup
 
 First create the following yaml file in your home directory:
 
@@ -21,7 +21,7 @@ personal: /path/to/personal/repos
 
 this is a list of the different folders that contain your repos you want to check.
 
-## Usage
+### Usage
 
 Simply run:
 
