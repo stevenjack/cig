@@ -8,8 +8,11 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,33 +28,67 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "cig"
 	app.Usage = "cig (Can I go?) checks all your git repos to see if they're in the state you want them to be"
+	app.Version = "0.1.0"
+
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "filter, f",
+			Value: "",
+			Usage: "Filter repos being searched",
+		},
+		cli.StringFlag{
+			Name:  "type, t",
+			Value: "",
+			Usage: "Filter by type",
+		},
+	}
 
 	app.Action = func(c *cli.Context) {
+		project_type := c.String("type")
+
+		var channel = make(chan string)
+		go output(channel)
+
 		paths := make(map[interface{}]interface{})
 		home_dir, err := homedir.Dir()
 		path := fmt.Sprintf("%s/.cig.yaml", home_dir)
 
 		data, err := ioutil.ReadFile(path)
-		check(err)
+
+		if err != nil {
+			channel <- color.RedString(fmt.Sprintf("Can't find config '%s'", path))
+			os.Exit(-1)
+		}
 
 		err = yaml.Unmarshal([]byte(data), &paths)
+		if err != nil {
+			channel <- color.RedString(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
+			os.Exit(-1)
+		}
 		check(err)
 
-		var channel = make(chan string)
 		var wg sync.WaitGroup
 
-		go output(channel)
-
 		for k, v := range paths {
-			files, _ := ioutil.ReadDir(v.(string))
-			fmt.Printf("\nChecking '%s' repos...\n", k)
-			for _, f := range files {
-				if f.IsDir() {
-					wg.Add(1)
-					go checkRepo(v.(string)+"/"+f.Name(), channel, &wg)
+			if project_type == "" || project_type == k {
+				fmt.Printf("\nChecking '%s' (%s) repos...\n", k, v)
+
+				visit := func(path string, info os.FileInfo, err error) error {
+					filter := c.String("filter")
+
+					matched, _ := regexp.MatchString(filter, path)
+					if info.IsDir() && (filter == "" || matched) {
+						wg.Add(1)
+						go checkRepo(v.(string), path, channel, &wg)
+					}
+					return nil
+				}
+
+				err := filepath.Walk(v.(string), visit)
+				if err != nil {
+					log.Fatal(err)
 				}
 			}
-			wg.Wait()
 		}
 
 		wg.Wait()
@@ -66,7 +103,7 @@ func output(channel chan string) {
 	}
 }
 
-func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
+func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup) {
 	exists, err := exists(fmt.Sprintf("%v/.git", path))
 
 	if exists {
@@ -116,7 +153,9 @@ func checkRepo(path string, channel chan string, wg *sync.WaitGroup) {
 		if len(changes) > 0 {
 			var buffer bytes.Buffer
 
-			buffer.WriteString(fmt.Sprintf("- %s (%s)", path, branch_name))
+			repo_name := strings.Replace(path, root+"/", "", -1)
+
+			buffer.WriteString(fmt.Sprintf("- %s (%s)", repo_name, branch_name))
 			for _, change := range changes {
 				buffer.WriteString(change)
 			}

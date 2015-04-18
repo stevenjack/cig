@@ -32,7 +32,17 @@ and all repos will be checked and the following will show up:
 * Repos that need pushing up to the origin
 * Repos that have new, unstaged and staged changes.
 
-To only check for a certain sub set of repos, say for example if you're at work
-just put the key from the yaml file as the second param:
+#### Filters
 
-`$: cig work`
+If you just want to check your 'work' repos for changes:
+
+`$: cig -t work`
+
+To filter them based on a certain string such as 'steve':
+
+`$: cig -f steve`
+
+You can also combine them, so to only show 'work' repos with 'steve' 
+in the path:
+
+`$: cig -t work -f steve`
