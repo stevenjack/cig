@@ -1,0 +1,22 @@
+language: go
+script:
+  - ./build/ci.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: doUo3FJLvbkPrwadQKp6EqwU2D7/yhAdXmDXhBBEFC8uIoo99C1CN/97ajkTf7GW53ZUOACTsAPaEiE2d3MVBheFN4Rza+8QXqHXOOoLl/7NjP/Tm/BYFlIqFuYgGbDy3HPU2cAqSwwXPKhMByZ1ydsw7bazQfH3KuXTcTLs6to=
+  file:
+    - cig_darwin_x86_64
+    - cig_linux_x86_64
+    - cig_windows_x86_64.exe
+  skip_cleanup: true
+  on:
+    tags: true
+notifications:
+  email:
+    recipients:
+      - stevenmajack@gmail.com
+    on_failure: change
+    on_success: never
+
+
