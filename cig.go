@@ -118,11 +118,20 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		modified := len(modified_lines) - 1
 
 		status_types := make(map[string]int)
-		re := regexp.MustCompile(`(?i)([MADRUC\?\!].*)\s`)
+		re := regexp.MustCompile(`(.*)\s`)
 
-		for _, status := range modified_lines {
-			match := re.FindStringSubmatch(string(status))
-			if len(match) != 0 {
+		fmt.Println(modified_lines)
+
+		for k, status := range modified_lines {
+			match := re.FindStringSubmatch(strings.TrimSpace(status))
+
+			for i, b := range match {
+				fmt.Printf("%d. %s\n", i, b)
+			}
+
+			fmt.Println(k)
+			fmt.Println(match)
+			if len(match) != 0 && status != "" {
 				status_types[match[1]] = status_types[match[1]] + 1
 			}
 		}
@@ -136,7 +145,7 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 
 		if modified > 0 && modified_lines[0] != "" {
 			for status_type, count := range status_types {
-				changes = append(changes, print_output(fmt.Sprintf(" %s(%d)", status_type, count), "red"))
+				changes = append(changes, print_output(fmt.Sprintf(" [%s](%d)", status_type, count), "red"))
 			}
 			//changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
 		}
