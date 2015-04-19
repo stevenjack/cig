@@ -2,6 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/stevenjack/cig/releases" target="_blank"><img src="https://img.shields.io/github/release/stevenjack/cig.svg"></a>
+  <a href="https://travis-ci.org/stevenjack/cig" target="_blank"><img src="https://travis-ci.org/stevenjack/cig.svg?branch=master"></a>
   </p>
 
 <p align="center">
@@ -35,7 +36,7 @@ curl -L https://bit.ly/cig-install | sudo bash
 ##### Manual install
 
 ```bash
-curl -L https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
+curl -L https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_`uname -s`_x86_64 > /usr/local/bin/cig
 chmod +x /usr/local/bin/cig
 ```
 
@@ -43,7 +44,6 @@ chmod +x /usr/local/bin/cig
 
 Download the following binary:
 
-* [32bit](https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_windows_386.exe)
 * [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_windows_amd64.exe)
 
 Once you have the binary, run it via your cmd prompt:
