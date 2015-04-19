@@ -117,6 +117,16 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		modified_lines := strings.Split(string(count_out), "\n")
 		modified := len(modified_lines) - 1
 
+		status_types := make(map[string]int)
+		re := regexp.MustCompile(`(?i)([MADRUC\?\!].*)\s`)
+
+		for _, status := range modified_lines {
+			match := re.FindStringSubmatch(string(status))
+			if len(match) != 0 {
+				status_types[match[1]] = status_types[match[1]] + 1
+			}
+		}
+
 		if err != nil {
 			println(err.Error())
 			return
@@ -125,7 +135,10 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		changes := []string{}
 
 		if modified > 0 && modified_lines[0] != "" {
-			changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
+			for status_type, count := range status_types {
+				changes = append(changes, print_output(fmt.Sprintf(" %s(%d)", status_type, count), "red"))
+			}
+			//changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
 		}
 
 		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
