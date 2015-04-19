@@ -8,6 +8,10 @@
 	Can I go? CLI app for checking the state of your git repositories.
 </p>
 
+<p align="center">
+![cig](https://cloud.githubusercontent.com/assets/527874/7220202/faaedf0c-e6b6-11e4-9cb8-bf62295f4128.png)
+</p>
+
 ### Installation
 
 To install cig follow the instructions for your os below:
