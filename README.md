@@ -66,8 +66,8 @@ Simply run:
 
 and all repos will be checked and the following will show up:
 
-* Repos that need pushing up to the origin
-* Repos that have new, unstaged and staged changes.
+* Repos that need pushing up to the origin (P)
+* Repos that have new, unstaged and staged changes (M(10))
 
 #### Filters
 
