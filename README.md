@@ -8,6 +8,30 @@
 	Can I go? CLI app for checking the state of your git repositories.
 </p>
 
+### Installation
+
+To install cig follow the instructions for your os below:
+
+#### OSX/Linux
+
+```bash
+curl -L https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/latest/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
+chmod +x /usr/local/bin/cig
+```
+
+### Windows
+
+Download the following binary:
+
+* [32bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/latest/cig_windows_386.exe)
+* [64bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/latest/cig_windows_amd64.exe)
+
+then run it in a cmd prompt:
+
+```
+C: cig_windows_amd64.exe
+```
+
 ### Setup
 
 First create the following yaml file in your home directory:
