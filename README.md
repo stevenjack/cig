@@ -23,8 +23,8 @@ chmod +x /usr/local/bin/cig
 
 Download the following binary:
 
-* [32bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/latest/cig_windows_386.exe)
-* [64bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/latest/cig_windows_amd64.exe)
+* [32bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_windows_386.exe)
+* [64bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_windows_amd64.exe)
 
 then run it in a cmd prompt:
 
