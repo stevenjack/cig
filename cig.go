@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"strconv"
+	"runtime"
 	"strings"
 	"sync"
 )
@@ -51,7 +51,7 @@ func main() {
 
 		paths := make(map[interface{}]interface{})
 		home_dir, err := homedir.Dir()
-		path := fmt.Sprintf("%s/.cig.yaml", home_dir)
+		path := fmt.Sprintf("%s%s.cig.yaml", home_dir, string(os.PathSeparator))
 
 		data, err := ioutil.ReadFile(path)
 
@@ -62,6 +62,7 @@ func main() {
 
 		err = yaml.Unmarshal([]byte(data), &paths)
 		if err != nil {
+			panic(err)
 			channel <- color.RedString(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
 			os.Exit(-1)
 		}
@@ -89,6 +90,8 @@ func main() {
 					log.Fatal(err)
 				}
 			}
+
+			wg.Wait()
 		}
 
 		wg.Wait()
@@ -104,31 +107,25 @@ func output(channel chan string) {
 }
 
 func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup) {
-	exists, err := exists(fmt.Sprintf("%v/.git", path))
+	exists, err := exists(fmt.Sprintf("%s%s.git", path, string(os.PathSeparator)))
 
 	if exists {
 		modified_files := exec.Command("git", "status", "-s")
 		modified_files.Dir = path
-		count := exec.Command("wc", "-l")
-		count.Dir = path
 
-		stdout, _ := modified_files.StdoutPipe()
-		modified_files.Start()
-		count.Stdin = stdout
-
-		count_out, _ := count.Output()
+		count_out, _ := modified_files.Output()
+		modified_lines := strings.Split(string(count_out), "\n")
+		modified := len(modified_lines) - 1
 
 		if err != nil {
 			println(err.Error())
 			return
 		}
 
-		modified, _ := strconv.ParseInt(strings.TrimSpace(string(count_out[:])), 0, 64)
-
 		changes := []string{}
 
-		if modified > 0 {
-			changes = append(changes, color.RedString(fmt.Sprintf(" M(%d)", modified)))
+		if modified > 0 && modified_lines[0] != "" {
+			changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
 		}
 
 		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
@@ -147,13 +144,13 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		remote_ref := strings.TrimSpace(string(rstdout[:]))
 
 		if err == nil && remote_ref != local_ref {
-			changes = append(changes, color.BlueString(" P"))
+			changes = append(changes, print_output(" P", "blue"))
 		}
 
 		if len(changes) > 0 {
 			var buffer bytes.Buffer
 
-			repo_name := strings.Replace(path, root+"/", "", -1)
+			repo_name := strings.Replace(path, fmt.Sprintf("%s%s", root, string(os.PathSeparator)), "", -1)
 
 			buffer.WriteString(fmt.Sprintf("- %s (%s)", repo_name, branch_name))
 			for _, change := range changes {
@@ -164,6 +161,19 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 
 	}
 	wg.Done()
+}
+
+func print_output(message string, output_type string) string {
+	if runtime.GOOS != "windows" {
+		switch output_type {
+		case "red":
+			return color.RedString(message)
+		case "blue":
+			return color.BlueString(message)
+		}
+
+	}
+	return message
 }
 
 func exists(path string) (bool, error) {

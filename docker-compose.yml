@@ -1,6 +1,6 @@
 dev:
   build: .
-  command: gox -os="darwin"
+  command: gox
   working_dir: /go/src/github.com/stevenjack/cig
   volumes:
     - .:/go/src/github.com/stevenjack/cig
