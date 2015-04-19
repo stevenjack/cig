@@ -14,6 +14,16 @@ To install cig follow the instructions for your os below:
 
 #### OSX/Linux
 
+##### One line install
+
+You can run the following that downloads the binary and changes the execute
+permission on it:
+
+```bash
+curl -L http://bit.ly/1Hm2Llh | sudo bash
+```
+
+
 ```bash
 curl -L https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
 chmod +x /usr/local/bin/cig
