@@ -14,6 +14,14 @@
 
 To install cig follow the instructions for your os below:
 
+#### GO
+
+If you have go installed and the bin folder added to your path, just run:
+
+```bash
+$: go get github.com/stevenjack/cig
+```
+
 #### OSX/Linux
 
 ##### One line install
@@ -49,11 +57,22 @@ C: cig_windows_amd64.exe
 
 First create the following yaml file in your home directory:
 
+#### Linux
+
 > ~/.cig.yaml
 
 ```yaml
-work: /path/to/work/repos
-personal: /path/to/personal/repos
+work: '/path/to/work/repos'
+personal: '/path/to/personal/repos'
+```
+
+#### Windows
+
+> ~/Users/Steven Jack/.cig.yaml
+
+```yaml
+work: 'C:\path\to\work\repos'
+personal: 'C:\path\to\personal\repos'
 ```
 
 this is a list of the different folders that contain your repos you want to check.
@@ -64,10 +83,12 @@ Simply run:
 
 `$: cig`
 
-and all repos will be checked and the following will show up:
+and all repos will be checked and the following information will be displayed::
 
 * Repos that need pushing up to the origin (P)
 * Repos that have new, unstaged and staged changes (M(10))
+
+> Note: see issues, where I plan on replacing with something similar to `(S)taged, (M)odified, (N)ew`
 
 #### Filters
 
@@ -83,3 +104,18 @@ You can also combine them, so to only show 'work' repos with 'steve'
 in the path:
 
 `$: cig -t work -f steve`
+
+### TODO
+
+Please see [issues](https://github.com/stevenjack/cig/issues)
+
+### Contributing
+
+1. Fork it ( http://github.com/stevenjack/cig/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+
+
