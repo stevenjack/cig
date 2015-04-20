@@ -1,7 +1,7 @@
 <h1 align="center">cig</h1>
 
 <p align="center">
-  <a href="https://registry.hub.docker.com/u/smaj/cig" target="_blank"><img src="https://img.shields.io/badge/Docker-Hub-3a9bdc.svg?style=flat-square"></a>
+  <a href="https://github.com/stevenjack/cig/releases" target="_blank"><img src="https://img.shields.io/github/release/stevenjack/cig.svg"></a>
   </p>
 
 <p align="center">
@@ -28,7 +28,7 @@ curl -L http://bit.ly/1Hm2Llh | sudo bash
 ##### Manual install
 
 ```bash
-curl -L https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
+curl -L https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
 chmod +x /usr/local/bin/cig
 ```
 
@@ -36,8 +36,8 @@ chmod +x /usr/local/bin/cig
 
 Download the following binary:
 
-* [32bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_windows_386.exe)
-* [64bit](https://s3-eu-west-1.amazonaws.com/cig.steven-jack.co.uk/0.1.0/cig_windows_amd64.exe)
+* [32bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_386.exe)
+* [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_amd64.exe)
 
 then run it in a cmd prompt:
 
