@@ -12,11 +12,11 @@
 
 ### Installation
 
-To install cig follow the instructions for your os below:
+To install cig, follow the instructions for your OS below:
 
 #### GO
 
-If you have go installed and the bin folder added to your path, just run:
+If you have [go](http://golang.org/) installed and the bin folder added to your path, just run:
 
 ```bash
 $: go get github.com/stevenjack/cig
@@ -26,12 +26,11 @@ $: go get github.com/stevenjack/cig
 
 ##### One line install
 
-You can run the following that downloads the binary and changes the execute
-permission on it:
-
 ```bash
 curl -L http://bit.ly/1Hm2Llh | sudo bash
 ```
+
+> Note: this command downloads the binary and changes the execute permission on it
 
 ##### Manual install
 
@@ -47,7 +46,7 @@ Download the following binary:
 * [32bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_386.exe)
 * [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_amd64.exe)
 
-then run it in a cmd prompt:
+Once you have the binary, run it via your cmd prompt:
 
 ```
 C: cig_windows_amd64.exe
@@ -55,15 +54,15 @@ C: cig_windows_amd64.exe
 
 ### Setup
 
-First create the following yaml file in your home directory:
+Create a `.cig.yaml` configuration file within your home directory:
 
 #### Linux
 
 > ~/.cig.yaml
 
 ```yaml
-work: '/path/to/work/repos'
-personal: '/path/to/personal/repos'
+work: /path/to/work/repos
+personal: /path/to/personal/repos
 ```
 
 #### Windows
@@ -71,11 +70,11 @@ personal: '/path/to/personal/repos'
 > ~/Users/Steven Jack/.cig.yaml
 
 ```yaml
-work: 'C:\path\to\work\repos'
-personal: 'C:\path\to\personal\repos'
+work: C:\path\to\work\repos
+personal: C:\path\to\personal\repos
 ```
 
-this is a list of the different folders that contain your repos you want to check.
+The configuration file defines the different folder locations that contain the `.git` repos you want cig to check for you.
 
 ### Usage
 
@@ -83,12 +82,14 @@ Simply run:
 
 `$: cig`
 
-and all repos will be checked and the following information will be displayed::
+Once executed, cig will check all your repos and the following information will be displayed:
 
-* Repos that need pushing up to the origin (P)
-* Repos that have new, unstaged and staged changes (M(10))
+* Repos that need pushing up to the origin: `P`
+* Repos that have new, unstaged and staged changes: `M(10)`
 
-> Note: see issues, where I plan on replacing with something similar to `(S)taged, (M)odified, (N)ew`
+> Note: the values will soon be replaced with something similar to:  
+> `(S)taged, (M)odified, (N)ew`  
+> Please see the [issues page](https://github.com/stevenjack/cig/issues) for full details
 
 #### Filters
 
@@ -116,6 +117,3 @@ Please see [issues](https://github.com/stevenjack/cig/issues)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
-
-
-
