@@ -62,7 +62,6 @@ func main() {
 
 		err = yaml.Unmarshal([]byte(data), &paths)
 		if err != nil {
-			panic(err)
 			channel <- color.RedString(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
 			os.Exit(-1)
 		}
