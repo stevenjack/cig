@@ -27,7 +27,7 @@ $: go get github.com/stevenjack/cig
 ##### One line install
 
 ```bash
-curl -L http://bit.ly/1Hm2Llh | sudo bash
+curl -L https://bit.ly/cig-install | sudo bash
 ```
 
 > Note: this command downloads the binary and changes the execute permission on it
