@@ -3,10 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/fatih/color"
-	"github.com/mitchellh/go-homedir"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,6 +12,11 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
 func check(e error) {
@@ -51,7 +52,7 @@ func main() {
 
 		paths := make(map[interface{}]interface{})
 		home_dir, err := homedir.Dir()
-		path := fmt.Sprintf("%s%s.cig.yaml", home_dir, string(os.PathSeparator))
+		path := fmt.Sprintf("%s%s.cig.yaml\n", home_dir, string(os.PathSeparator))
 
 		data, err := ioutil.ReadFile(path)
 
