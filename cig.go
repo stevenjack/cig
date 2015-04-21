@@ -52,7 +52,7 @@ func main() {
 
 		paths := make(map[interface{}]interface{})
 		home_dir, err := homedir.Dir()
-		path := fmt.Sprintf("%s%s.cig.yaml", home_dir, string(os.PathSeparator))
+		path := fmt.Sprintf("%s%s.cig.yaml\n", home_dir, string(os.PathSeparator))
 
 		data, err := ioutil.ReadFile(path)
 
