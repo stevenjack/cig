@@ -108,7 +108,7 @@ in the path:
 
 ### TODO
 
-Please see [issues](https://github.com/stevenjack/cig/issues)
+Please see [issues](https://www.github.com/stevenjack/cig/issues?utf8=✓&q=is%3Aissue+is%3Aopen+label%3ATODO)
 
 ### Contributing
 
