@@ -1,28 +1,19 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/fatih/color"
-	"github.com/mitchellh/go-homedir"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
-	"strings"
 	"sync"
-)
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
+)
 
 func main() {
 	app := cli.NewApp()
@@ -56,7 +47,7 @@ func main() {
 		data, err := ioutil.ReadFile(path)
 
 		if err != nil {
-			channel <- color.RedString(fmt.Sprintf("Can't find config '%s'", path))
+			channel <- color.RedString(fmt.Sprintf("Can't find config '%s'\n", path))
 			os.Exit(-1)
 		}
 
@@ -96,92 +87,4 @@ func main() {
 		wg.Wait()
 	}
 	app.Run(os.Args)
-}
-
-func output(channel chan string) {
-	for {
-		entry := <-channel
-		fmt.Printf(entry)
-	}
-}
-
-func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup) {
-	exists, err := exists(fmt.Sprintf("%s%s.git", path, string(os.PathSeparator)))
-
-	if exists {
-		modified_files := exec.Command("git", "status", "-s")
-		modified_files.Dir = path
-
-		count_out, _ := modified_files.Output()
-		modified_lines := strings.Split(string(count_out), "\n")
-		modified := len(modified_lines) - 1
-
-		if err != nil {
-			println(err.Error())
-			return
-		}
-
-		changes := []string{}
-
-		if modified > 0 && modified_lines[0] != "" {
-			changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
-		}
-
-		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
-		branch.Dir = path
-		bstdout, _ := branch.Output()
-		branch_name := strings.TrimSpace(string(bstdout[:]))
-
-		local := exec.Command("git", "rev-parse", branch_name)
-		local.Dir = path
-		lstdout, _ := local.Output()
-		local_ref := strings.TrimSpace(string(lstdout[:]))
-
-		remote := exec.Command("git", "rev-parse", fmt.Sprintf("origin/%s", branch_name))
-		remote.Dir = path
-		rstdout, err := remote.Output()
-		remote_ref := strings.TrimSpace(string(rstdout[:]))
-
-		if err == nil && remote_ref != local_ref {
-			changes = append(changes, print_output(" P", "blue"))
-		}
-
-		if len(changes) > 0 {
-			var buffer bytes.Buffer
-
-			repo_name := strings.Replace(path, fmt.Sprintf("%s%s", root, string(os.PathSeparator)), "", -1)
-
-			buffer.WriteString(fmt.Sprintf("- %s (%s)", repo_name, branch_name))
-			for _, change := range changes {
-				buffer.WriteString(change)
-			}
-			channel <- buffer.String() + "\n"
-		}
-
-	}
-	wg.Done()
-}
-
-func print_output(message string, output_type string) string {
-	if runtime.GOOS != "windows" {
-		switch output_type {
-		case "red":
-			return color.RedString(message)
-		case "blue":
-			return color.BlueString(message)
-		}
-
-	}
-	return message
-}
-
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
 }
