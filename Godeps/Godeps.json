@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/vic3lord/cig",
+	"ImportPath": "github.com/stevenjack/cig",
 	"GoVersion": "go1.4",
 	"Deps": [
 		{

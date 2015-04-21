@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/vic3lord/cig/Godeps/_workspace/src/github.com/shiena/ansicolor"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/shiena/ansicolor"
 )
 
 // Testing colors is kinda different. First we test for given colors and their
