@@ -13,10 +13,10 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/vic3lord/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/vic3lord/cig/Godeps/_workspace/src/github.com/fatih/color"
-	"github.com/vic3lord/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
-	"github.com/vic3lord/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
 func check(e error) {
