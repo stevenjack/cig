@@ -35,7 +35,7 @@ curl -L https://bit.ly/cig-install | sudo bash
 ##### Manual install
 
 ```bash
-curl -L https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
+curl -L https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_`uname -s`_`uname -m` > /usr/local/bin/cig
 chmod +x /usr/local/bin/cig
 ```
 
@@ -43,8 +43,8 @@ chmod +x /usr/local/bin/cig
 
 Download the following binary:
 
-* [32bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_386.exe)
-* [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.0/cig_windows_amd64.exe)
+* [32bit](https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_windows_386.exe)
+* [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.1/cig_windows_amd64.exe)
 
 Once you have the binary, run it via your cmd prompt:
 

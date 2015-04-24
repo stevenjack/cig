@@ -19,7 +19,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "cig"
 	app.Usage = "cig (Can I go?) checks all your git repos to see if they're in the state you want them to be"
-	app.Version = "0.1.0"
+	app.Version = "0.1.1"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
