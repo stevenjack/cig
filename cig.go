@@ -10,7 +10,6 @@ import (
 	"sync"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
@@ -47,13 +46,14 @@ func main() {
 		data, err := ioutil.ReadFile(path)
 
 		if err != nil {
-			channel <- color.RedString(fmt.Sprintf("Can't find config '%s'\n", path))
+			channel <- error_output(fmt.Sprintf("Can't find config '%s'\n", path))
 			os.Exit(-1)
 		}
 
 		err = yaml.Unmarshal([]byte(data), &paths)
+
 		if err != nil {
-			channel <- color.RedString(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
+			channel <- error_output(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
 			os.Exit(-1)
 		}
 		check(err)
