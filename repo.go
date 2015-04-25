@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 )
 
 func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup) {
-	exists, err := exists(fmt.Sprintf("%s%s.git", path, string(os.PathSeparator)))
+	exists, err := exists(filepath.Join(path, ".git"))
 
 	if exists {
 		modified_files := exec.Command("git", "status", "-s")
