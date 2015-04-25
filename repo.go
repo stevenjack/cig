@@ -14,7 +14,7 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 	exists, err := exists(filepath.Join(path, ".git"))
 
 	if exists {
-		modified_files := exec.Command("git", "status", "-s")
+		modified_files := exec.Command("git", "status", "--porcelain")
 		modified_files.Dir = path
 
 		count_out, _ := modified_files.Output()
