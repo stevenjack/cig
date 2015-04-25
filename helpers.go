@@ -14,6 +14,10 @@ func check(err error) {
 	}
 }
 
+func error_output(message string) string {
+	return print_output(message, "red")
+}
+
 func output(channel chan string) {
 	for {
 		entry := <-channel
