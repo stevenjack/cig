@@ -1,15 +1,14 @@
 language: go
-before_install:
-  - go get github.com/mitchellh/gox
-before_script:
-  - gox -os="darwin linux windows" -arch="amd64" -build-toolchain
 script:
-  - gox -os="darwin linux windows" -arch="amd64"
+  - build.sh
 deploy:
   provider: releases
   api_key:
     secure: doUo3FJLvbkPrwadQKp6EqwU2D7/yhAdXmDXhBBEFC8uIoo99C1CN/97ajkTf7GW53ZUOACTsAPaEiE2d3MVBheFN4Rza+8QXqHXOOoLl/7NjP/Tm/BYFlIqFuYgGbDy3HPU2cAqSwwXPKhMByZ1ydsw7bazQfH3KuXTcTLs6to=
-  file: cig_darwin_amd64
+  file:
+    - cig_darwin_amd64
+    - cig_linux_amd64
+    - cig_windows_amd64.exe
   skip_cleanup: true
   on:
     repo: stevenjack/cig
