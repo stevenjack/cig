@@ -6,4 +6,3 @@ dev:
     - .:/go/src/github.com/stevenjack/cig
     - ~/Projects:/projects
     - ~/.cig.yaml:/root/.cig.yaml
-  bop: -

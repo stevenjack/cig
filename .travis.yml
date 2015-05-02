@@ -15,6 +15,6 @@ deploy:
       - "cig_windows_amd64.exe"
     skip_cleanup: true
     on:
-      branch: **
+      all_branches: true
 #    on:
 #      tags: true
