@@ -1,0 +1,21 @@
+language: go
+before_install:
+- go get github.com/mitchellh/gox
+before_script:
+- gox -os="darwin linux windows" -arch="amd64" -build-toolchain
+script:
+- gox -os="darwin linux windows" -arch="amd64"
+deploy:
+  provider: releases
+  api_key:
+    secure: unEiPwRlQ0thcxGXyZPVcq3ISJsA8QUtvVteFaNLH8suFR8kK7eWbb9OIdZBOI6QBFnG3qvSDPff2eNG3VW+SH0G31RFCCnPu4KSErcmhROH9nW5DQLCMyp0qa+mEla5ppMbsCRvYPhogYUdZQZGHTe3YRFhcU25qR4n4SlJ5T8=
+    file:
+      - "cig_darwin_amd64"
+      - "cig_linux_amd64"
+      - "cig_windows_amd64.exe"
+    skip_cleanup: true
+    on:
+      repo: stevenjack/cig
+      branch: "feat/travis-ci"
+#    on:
+#      tags: true
