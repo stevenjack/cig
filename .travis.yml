@@ -8,13 +8,14 @@ script:
 deploy:
   provider: releases
   api_key:
-    secure: P5EVtgqEI5xxeud7U6pFnBiaaEdrPKnlRfHHZ+FEJygJfj/C49//njVBBqVuovR8/X6wYGlFTkn0+61NbuQftnVjEbqDqdu3lOEfqRtcivMpN0MQ62sgLJKd6QPTmh0pAXMNzHreOSGsIPjh7yv0Eulu7xanWKHQ7Z3RoE3Ckv0=
+    secure: unEiPwRlQ0thcxGXyZPVcq3ISJsA8QUtvVteFaNLH8suFR8kK7eWbb9OIdZBOI6QBFnG3qvSDPff2eNG3VW+SH0G31RFCCnPu4KSErcmhROH9nW5DQLCMyp0qa+mEla5ppMbsCRvYPhogYUdZQZGHTe3YRFhcU25qR4n4SlJ5T8=
     file:
       - "cig_darwin_amd64"
       - "cig_linux_amd64"
       - "cig_windows_amd64.exe"
     skip_cleanup: true
     on:
+      repo: stevenjack/cig
       all_branches: true
 #    on:
 #      tags: true
