@@ -10,7 +10,7 @@ deploy:
   api_key:
     secure: doUo3FJLvbkPrwadQKp6EqwU2D7/yhAdXmDXhBBEFC8uIoo99C1CN/97ajkTf7GW53ZUOACTsAPaEiE2d3MVBheFN4Rza+8QXqHXOOoLl/7NjP/Tm/BYFlIqFuYgGbDy3HPU2cAqSwwXPKhMByZ1ydsw7bazQfH3KuXTcTLs6to=
   file: cig_darwin_amd64
+  skip_cleanup: true
   on:
     repo: stevenjack/cig
-    branch: feat/travis-ci
     tags: true
