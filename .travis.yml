@@ -13,3 +13,4 @@ deploy:
   on:
     repo: stevenjack/cig
     branch: feat/travis-ci
+    tags: true
