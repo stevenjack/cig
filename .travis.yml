@@ -1,6 +1,6 @@
 language: go
 script:
-  - .travis/build.sh
+  - ./build.sh
 deploy:
   provider: releases
   api_key:
