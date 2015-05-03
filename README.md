@@ -2,6 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/stevenjack/cig/releases" target="_blank"><img src="https://img.shields.io/github/release/stevenjack/cig.svg"></a>
+<a href="https://travis-ci.org/stevenjack/cig" target="_blank"><img src="https://travis-ci.org/stevenjack/cig.svg?branch=master"></a>
   </p>
 
 <p align="center">
