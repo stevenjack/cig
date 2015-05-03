@@ -11,6 +11,6 @@ deploy:
     - cig_windows_amd64.exe
   skip_cleanup: true
   on:
-    repo: stevenjack/cig
     condition: $TRAVIS_COMMIT_MESSAGE =~ "^(Minor|Major|Patch).*"
+    all_branches: true
     tags: true
