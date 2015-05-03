@@ -1,24 +1,40 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"os"
-	"path/filepath"
-	"regexp"
-	"sync"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
-	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
-	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
+	"github.com/stevenjack/cig/app"
+	"github.com/stevenjack/cig/output"
 )
 
+const version string = "0.1.1"
+
 func main() {
+	var output_channel = make(chan output.Payload)
+	go output.Wait(output_channel)
+
+	cli_wrapper := main_app()
+	repo_list, err := app.Config()
+
+	if err != nil {
+		output_channel <- output.Error(err.Error())
+	}
+
+	cli_wrapper.Action = func(context *cli.Context) {
+		project_type := context.String("type")
+		filter := context.String("filter")
+		app.Handle(repo_list, project_type, filter, output_channel)
+	}
+
+	cli_wrapper.Run(os.Args)
+}
+
+func main_app() *cli.App {
 	app := cli.NewApp()
 	app.Name = "cig"
 	app.Usage = "cig (Can I go?) checks all your git repos to see if they're in the state you want them to be"
-	app.Version = "0.1.1"
+	app.Version = version
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
@@ -32,59 +48,5 @@ func main() {
 			Usage: "Filter by type",
 		},
 	}
-
-	app.Action = func(c *cli.Context) {
-		project_type := c.String("type")
-
-		var channel = make(chan string)
-		go output(channel)
-
-		paths := make(map[interface{}]interface{})
-		home_dir, err := homedir.Dir()
-		path := filepath.Join(home_dir, ".cig.yaml")
-
-		data, err := ioutil.ReadFile(path)
-
-		if err != nil {
-			channel <- error_output(fmt.Sprintf("Can't find config '%s'\n", path))
-			os.Exit(-1)
-		}
-
-		err = yaml.Unmarshal([]byte(data), &paths)
-
-		if err != nil {
-			channel <- error_output(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
-			os.Exit(-1)
-		}
-		check(err)
-
-		var wg sync.WaitGroup
-
-		for k, v := range paths {
-			if project_type == "" || project_type == k {
-				fmt.Printf("\nChecking '%s' (%s) repos...\n", k, v)
-
-				visit := func(path string, info os.FileInfo, err error) error {
-					filter := c.String("filter")
-
-					matched, _ := regexp.MatchString(filter, path)
-					if info.IsDir() && (filter == "" || matched) {
-						wg.Add(1)
-						go checkRepo(v.(string), path, channel, &wg)
-					}
-					return nil
-				}
-
-				err := filepath.Walk(v.(string), visit)
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
-
-			wg.Wait()
-		}
-
-		wg.Wait()
-	}
-	app.Run(os.Args)
+	return app
 }
