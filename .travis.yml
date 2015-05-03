@@ -1,6 +1,6 @@
 language: go
 script:
-  - ./build.sh
+  - ./build/ci.sh
 deploy:
   provider: releases
   api_key:
@@ -12,4 +12,5 @@ deploy:
   skip_cleanup: true
   on:
     repo: stevenjack/cig
+    condition: $TRAVIS_BRANCH =~ ^(Minor|Major|Patch).*$
     tags: true
