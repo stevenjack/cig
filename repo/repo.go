@@ -1,4 +1,4 @@
-package main
+package repo
 
 import (
 	"bytes"
@@ -8,10 +8,16 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/stevenjack/cig/output"
 )
 
-func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup) {
-	exists, err := exists(filepath.Join(path, ".git"))
+func Check(root string, path string, output_channel chan output.Payload, wg *sync.WaitGroup) {
+	exists, err := Exists(filepath.Join(path, ".git"))
+
+	if err != nil {
+		return
+	}
 
 	if exists {
 		modified_files := exec.Command("git", "status", "--porcelain")
@@ -22,14 +28,13 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		modified := len(modified_lines) - 1
 
 		if err != nil {
-			println(err.Error())
-			return
+			output_channel <- output.Error(err.Error())
 		}
 
 		changes := []string{}
 
 		if modified > 0 && modified_lines[0] != "" {
-			changes = append(changes, print_output(fmt.Sprintf(" M(%d)", modified), "red"))
+			changes = append(changes, output.ApplyColour(fmt.Sprintf(" M(%d)", modified), "red"))
 		}
 
 		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
@@ -48,7 +53,7 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 		remote_ref := strings.TrimSpace(string(rstdout[:]))
 
 		if err == nil && remote_ref != local_ref {
-			changes = append(changes, print_output(" P", "blue"))
+			changes = append(changes, output.ApplyColour(" P", "blue"))
 		}
 
 		if len(changes) > 0 {
@@ -60,9 +65,20 @@ func checkRepo(root string, path string, channel chan string, wg *sync.WaitGroup
 			for _, change := range changes {
 				buffer.WriteString(change)
 			}
-			channel <- buffer.String() + "\n"
+			output_channel <- output.Print(buffer.String())
 		}
 
 	}
 	wg.Done()
+}
+
+func Exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
