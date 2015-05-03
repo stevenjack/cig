@@ -44,10 +44,9 @@ func ApplyColour(message string, outputType string) string {
 func Wait(channel chan Payload) {
 	for {
 		entry := <-channel
+		fmt.Println(entry.Message)
 		if entry.Error {
 			os.Exit(-1)
-		} else {
-			fmt.Println(entry.Message)
 		}
 	}
 }
