@@ -23,7 +23,17 @@ If you have [go](http://golang.org/) installed and the bin folder added to your 
 $: go get github.com/stevenjack/cig
 ```
 
-#### OSX/Linux
+#### OSX
+
+Make sure you have [homebrew](https://www.github.com/homebrew/homebrew) installed, then run the
+following:
+
+`$: brew install cig`
+
+> Alternativly you can follow the install instructions for `Linux` below if you don't have or
+want to into homebrew.
+
+#### Linux
 
 ##### One line install
 
