@@ -1,9 +1,12 @@
 package main
 
 import (
+	"errors"
 	"os"
+	"path/filepath"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
+	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"github.com/stevenjack/cig/app"
 	"github.com/stevenjack/cig/output"
 )
@@ -11,26 +14,44 @@ import (
 const version string = "0.1.2"
 
 func main() {
-	var output_channel = make(chan output.Payload)
-	go output.Wait(output_channel)
+	var outputChannel = make(chan output.Payload)
+	go output.Wait(outputChannel)
 
-	cli_wrapper := main_app()
-	repo_list, err := app.Config()
+	cliWrapper := mainApp()
+	path, err := configPath()
 
 	if err != nil {
-		output_channel <- output.Error(err.Error())
+		outputChannel <- output.Error(err.Error())
 	}
 
-	cli_wrapper.Action = func(context *cli.Context) {
-		project_type := context.String("type")
+	repoList, err := app.Config(path)
+
+	if err != nil {
+		outputChannel <- output.Error(err.Error())
+	}
+
+	cliWrapper.Action = func(context *cli.Context) {
+		projectType := context.String("type")
 		filter := context.String("filter")
-		app.Handle(repo_list, project_type, filter, output_channel)
+		app.Handle(repoList, projectType, filter, outputChannel)
 	}
 
-	cli_wrapper.Run(os.Args)
+	cliWrapper.Run(os.Args)
 }
 
-func main_app() *cli.App {
+func configPath() (string, error) {
+	homeDir, err := homedir.Dir()
+
+	if err != nil {
+		return "", errors.New("Couldn't determine home directory")
+	}
+
+	path := filepath.Join(homeDir, ".cig.yaml")
+
+	return path, nil
+}
+
+func mainApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "cig"
 	app.Usage = "cig (Can I go?) checks all your git repos to see if they're in the state you want them to be"

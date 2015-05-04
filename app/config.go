@@ -4,21 +4,12 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
 
-	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
-func Config() (map[string]string, error) {
+func Config(path string) (map[string]string, error) {
 	repo_list := make(map[string]string)
-	home_dir, err := homedir.Dir()
-
-	if err != nil {
-		return nil, errors.New("Couldn't determine home directory")
-	}
-
-	path := filepath.Join(home_dir, ".cig.yaml")
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
