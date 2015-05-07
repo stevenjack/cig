@@ -8,6 +8,10 @@ import (
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
 )
 
+type Output interface {
+	Message() string
+}
+
 type Payload struct {
 	Message string
 	Error   bool
@@ -15,6 +19,10 @@ type Payload struct {
 
 func (p *Payload) IsError() {
 	p.Error = true
+}
+
+func (p *Payload) Message() {
+	return p.Message
 }
 
 func Error(message string) Payload {
