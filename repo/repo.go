@@ -2,6 +2,7 @@ package repo
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -17,7 +18,6 @@ type Repo struct {
 	Exists  bool
 	Branch  string
 	Changes []string
-	Synced  bool
 }
 
 func NewRepo(string path) *Repo {
@@ -36,99 +36,45 @@ func NewRepo(string path) *Repo {
 	return &repo
 }
 
-func (r *Repo) SetChanges() error {
-
-	modifiedFiles := exec.Command("git", "status", "--porcelain")
-	modifiedFiles.Dir = r.Path
-
-	countOut, _ := modifiedFiles.Output()
-	modifiedLines := strings.Split(string(countOut), "\n")
-	modified := len(modifiedLines) - 1
-
-	if err != nil {
-		return err.Error()
-	}
-
-	if modified > 0 && modifiedLines[0] != "" {
-		r.Changes = append(Changes, output.ApplyColour(fmt.Sprintf(" M(%d)", modified), "red"))
-	}
-
-	branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
-	branch.Dir = path
-	bstdout, _ := branch.Output()
-	branch_name := strings.TrimSpace(string(bstdout[:]))
-
-	local := exec.Command("git", "rev-parse", branch_name)
-	local.Dir = path
-	lstdout, _ := local.Output()
-	local_ref := strings.TrimSpace(string(lstdout[:]))
-
-	remote := exec.Command("git", "rev-parse", fmt.Sprintf("origin/%s", branch_name))
-	remote.Dir = path
-	rstdout, err := remote.Output()
-	remote_ref := strings.TrimSpace(string(rstdout[:]))
-
-	if err == nil && remote_ref != local_ref {
-		changes = append(changes, output.ApplyColour(" P", "blue"))
-	}
-
-}
-
-func Check(root string, path string, outputChannel chan output.Payload, wg *sync.WaitGroup) {
-	repo := Repo{}
-	repo.SetPath(path)
+func Check(root string, path string, wg *sync.WaitGroup) (*Repo, error) {
+	repo := NewRepo(path)
 
 	if !repo.Exists {
-		return
+		return nil, errors.New("No git repository found")
 	}
 
-	modifiedFiles := exec.Command("git", "status", "--porcelain")
-	modifiedFiles.Dir = path
-
-	countOut, _ := modifiedFiles.Output()
+	countOut = executeCommand(path, "git", "status", "--porcelain")
 	modifiedLines := strings.Split(string(countOut), "\n")
 	modified := len(modifiedLines) - 1
 
 	if err != nil {
-		outputChannel <- output.Error(err.Error())
+		return nil, output.Error(err.Error())
 	}
-
-	changes := []string{}
 
 	if modified > 0 && modifiedLines[0] != "" {
-		changes = append(changes, output.ApplyColour(fmt.Sprintf(" M(%d)", modified), "red"))
+		repo.Changes = append(repo.Changes, output.ApplyColour(fmt.Sprintf(" M(%d)", modified), "red"))
 	}
 
-	branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
-	branch.Dir = path
-	bstdout, _ := branch.Output()
-	branch_name := strings.TrimSpace(string(bstdout[:]))
-
-	local := exec.Command("git", "rev-parse", branch_name)
-	local.Dir = path
-	lstdout, _ := local.Output()
-	local_ref := strings.TrimSpace(string(lstdout[:]))
-
-	remote := exec.Command("git", "rev-parse", fmt.Sprintf("origin/%s", branch_name))
-	remote.Dir = path
-	rstdout, err := remote.Output()
-	remote_ref := strings.TrimSpace(string(rstdout[:]))
+	repo.Branch = executeCommand(path, "git", "rev-parse", "--abbrev-ref", "HEAD")
+	local_ref = executeCommand(path, "git", "rev-parse", repo.Branch)
+	remote_ref := executeCommand(path, "git", "rev-parse", fmt.Sprintf("origin/%s", repo.Branch))
 
 	if err == nil && remote_ref != local_ref {
-		changes = append(changes, output.ApplyColour(" P", "blue"))
+		repo.Changes = append(repo.Changes, output.ApplyColour(" P", "blue"))
 	}
 
-	if len(changes) > 0 {
-		var buffer bytes.Buffer
-
-		repo_name := strings.Replace(path, fmt.Sprintf("%s%s", root, string(os.PathSeparator)), "", -1)
-
-		buffer.WriteString(fmt.Sprintf("- %s (%s)", repo_name, branch_name))
-		for _, change := range changes {
-			buffer.WriteString(change)
-		}
-		outputChannel <- output.Print(buffer.String())
-
-	}
 	wg.Done()
+	return repo, nil
+}
+
+func executeCommand(dir, string, commands ...string) (error, string) {
+	cmd := exec.Command(commands)
+	cmd.Dir = dir
+	stdout, err := cmd.Output()
+
+	if err != nil {
+		errors.New(fmt.Sprintf("Error running command: %s", err.Error()))
+	}
+
+	return strings.TrimSpace(string(stdout[:]))
 }
