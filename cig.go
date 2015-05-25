@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"sync"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/codegangsta/cli"
 	"github.com/stevenjack/cig/app"
@@ -11,23 +12,27 @@ import (
 const version string = "0.1.2"
 
 func main() {
+	var done sync.WaitGroup
 	var output_channel = make(chan output.Payload)
-	go output.Wait(output_channel)
+
+	done.Add(1)
+	go output.Wait(output_channel, &done)
 
 	cli_wrapper := main_app()
 	repo_list, err := app.Config()
 
 	if err != nil {
-		output_channel <- output.Error(err.Error())
+		output_channel <- output.FatalError(err.Error())
 	}
 
 	cli_wrapper.Action = func(context *cli.Context) {
 		project_type := context.String("type")
 		filter := context.String("filter")
-		app.Handle(repo_list, project_type, filter, output_channel)
+		app.Handle(repo_list, project_type, filter, output_channel, &done)
 	}
 
-	cli_wrapper.Run(os.Args)
+	go cli_wrapper.Run(os.Args)
+	done.Wait()
 }
 
 func main_app() *cli.App {

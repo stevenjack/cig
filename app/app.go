@@ -11,7 +11,7 @@ import (
 	"github.com/stevenjack/cig/repo"
 )
 
-func Handle(repoList map[string]string, projectTypeToCheck string, filter string, output_channel chan output.Payload) {
+func Handle(repoList map[string]string, projectTypeToCheck string, filter string, output_channel chan output.Payload, done *sync.WaitGroup) {
 	var wg sync.WaitGroup
 
 	for projectType, path := range repoList {
@@ -19,7 +19,16 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 			output_channel <- output.Print(fmt.Sprintf("\nChecking '%s' (%s) repos...", projectType, path))
 
 			visit := func(visitedPath string, info os.FileInfo, err error) error {
-				matched, _ := regexp.MatchString(filter, visitedPath)
+				if err != nil {
+					return fmt.Errorf("Unable to find path %s", path)
+				}
+
+				matched, err := regexp.MatchString(filter, visitedPath)
+
+				if err != nil {
+					return fmt.Errorf("Problem matching the filter %s against the following path %s", filter, visitedPath)
+				}
+
 				if info.IsDir() && (filter == "" || matched) {
 					wg.Add(1)
 					go repo.Check(path, visitedPath, output_channel, &wg)
@@ -36,4 +45,5 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 		wg.Wait()
 	}
 	wg.Wait()
+	done.Done()
 }
