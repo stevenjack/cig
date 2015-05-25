@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+        "sync"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
 )
@@ -25,7 +26,7 @@ func Error(message string) Payload {
 }
 
 func Print(message string) Payload {
-	return Payload{message, false}
+        return Payload{message, false, false}
 }
 
 func ApplyColour(message string, outputType string) string {
@@ -41,11 +42,12 @@ func ApplyColour(message string, outputType string) string {
 	return message
 }
 
-func Wait(channel chan Payload) {
+func Wait(channel chan Payload, done *sync.WaitGroup) {
 	for {
 		entry := <-channel
 		fmt.Println(entry.Message)
-		if entry.Error {
+                if entry.Fatal {
+                        done.Done()
 			os.Exit(-1)
 		}
 	}

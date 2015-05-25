@@ -11,7 +11,7 @@ import (
 	"github.com/stevenjack/cig/repo"
 )
 
-func Handle(repoList map[string]string, projectTypeToCheck string, filter string, output_channel chan output.Payload) {
+func Handle(repoList map[string]string, projectTypeToCheck string, filter string, output_channel chan output.Payload, done *sync.WaitGroup) {
 	var wg sync.WaitGroup
 
 	for projectType, path := range repoList {
@@ -36,4 +36,5 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 		wg.Wait()
 	}
 	wg.Wait()
+        done.Done()
 }
