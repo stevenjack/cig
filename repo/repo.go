@@ -23,7 +23,7 @@ func Check(root string, path string, output_channel chan output.Payload, wg *syn
 		modified_files := exec.Command("git", "status", "--porcelain")
 		modified_files.Dir = path
 
-		count_out, _ := modified_files.Output()
+		count_out, err := modified_files.Output()
 		modified_lines := strings.Split(string(count_out), "\n")
 		modified := len(modified_lines) - 1
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-        "sync"
+	"sync"
 
 	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
 )
@@ -12,10 +12,15 @@ import (
 type Payload struct {
 	Message string
 	Error   bool
+	Fatal   bool
 }
 
 func (p *Payload) IsError() {
 	p.Error = true
+}
+
+func (p *Payload) IsFatal() {
+	p.Fatal = true
 }
 
 func Error(message string) Payload {
@@ -25,8 +30,14 @@ func Error(message string) Payload {
 	return payload
 }
 
+func FatalError(message string) Payload {
+	payload := Error(message)
+	payload.IsFatal()
+	return payload
+}
+
 func Print(message string) Payload {
-        return Payload{message, false, false}
+	return Payload{message, false, false}
 }
 
 func ApplyColour(message string, outputType string) string {
@@ -46,8 +57,8 @@ func Wait(channel chan Payload, done *sync.WaitGroup) {
 	for {
 		entry := <-channel
 		fmt.Println(entry.Message)
-                if entry.Fatal {
-                        done.Done()
+		if entry.Fatal {
+			done.Done()
 			os.Exit(-1)
 		}
 	}
