@@ -10,9 +10,13 @@ import (
 	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
-func Config() (map[string]string, error) {
+func Config(config_path string) (map[string]string, error) {
 	repo_list := make(map[string]string)
 	home_dir, err := homedir.Dir()
+
+	if config_path != "" {
+		home_dir = config_path
+	}
 
 	if err != nil {
 		return nil, errors.New("Couldn't determine home directory")
