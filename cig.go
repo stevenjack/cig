@@ -12,18 +12,20 @@ const version string = "0.1.2"
 
 func main() {
 	var output_channel = make(chan output.Payload)
+
 	go output.Wait(output_channel)
-
 	cli_wrapper := main_app()
-	repo_list, err := app.Config()
-
-	if err != nil {
-		output_channel <- output.Error(err.Error())
-	}
 
 	cli_wrapper.Action = func(context *cli.Context) {
+		config_path := context.String("config-path")
 		project_type := context.String("type")
 		filter := context.String("filter")
+		repo_list, err := app.Config(config_path)
+
+		if err != nil {
+			output_channel <- output.Error(err.Error())
+		}
+
 		app.Handle(repo_list, project_type, filter, output_channel)
 	}
 
@@ -46,6 +48,11 @@ func main_app() *cli.App {
 			Name:  "type, t",
 			Value: "",
 			Usage: "Filter by type",
+		},
+		cli.StringFlag{
+			Name:  "config-path, cp",
+			Value: "",
+			Usage: "Path to the cig config (Default ~/.cig.yaml)",
 		},
 	}
 	return app
