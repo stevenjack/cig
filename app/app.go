@@ -20,7 +20,8 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 
 			visit := func(visitedPath string, info os.FileInfo, err error) error {
 				matched, _ := regexp.MatchString(filter, visitedPath)
-				if info.IsDir() && (filter == "" || matched) {
+				exists := pathExists(filepath.Join(visitedPath, ".git"))
+				if exists && info.IsDir() && (filter == "" || matched) {
 					wg.Add(1)
 					go repo.Check(path, visitedPath, output_channel, &wg)
 				}
@@ -36,4 +37,15 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 		wg.Wait()
 	}
 	wg.Wait()
+}
+
+func pathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+	if os.IsNotExist(err) {
+		return false
+	}
+	return false
 }
