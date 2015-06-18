@@ -30,8 +30,8 @@ following:
 
 `$: brew install cig`
 
-> Alternativly you can follow the install instructions for `Linux` below if you don't have or
-want to into homebrew.
+> Alternatively you can follow the install instructions for `Linux` below if you don't have or
+want to install homebrew.
 
 #### Linux
 
