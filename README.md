@@ -1,9 +1,9 @@
 <h1 align="center">cig</h1>
 
 <p align="center">
-  <a href="https://github.com/stevenjack/cig/releases" target="_blank"><img src="https://img.shields.io/github/release/stevenjack/cig.svg"></a>
-  <a href="https://travis-ci.org/stevenjack/cig" target="_blank"><img src="https://travis-ci.org/stevenjack/cig.svg?branch=master"></a>
-  <a href="https://gitter.im/stevenjack/cig?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank"><img src="https://badges.gitter.im/Join%20Chat.svg"></a>
+  <a href="https://github.com/stevenjack/cig/releases" target="_blank"><img src="https://img.shields.io/github/release/stevenjack/cig.svg?style=flat-square"></a>
+  <a href="https://travis-ci.org/stevenjack/cig" target="_blank"><img src="http://img.shields.io/travis/stevenjack/cig.svg?style=flat-square"></a>
+  <a href="https://gitter.im/stevenjack/cig?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge" target="_blank"><img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square"></a>
 </p>
 
 <p align="center">
