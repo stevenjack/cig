@@ -29,7 +29,7 @@ func Handle(repoList map[string]string, projectTypeToCheck string, filter string
 
 			err := filepath.Walk(path, visit)
 			if err != nil {
-				output_channel <- output.Error(err.Error())
+				output_channel <- output.FatalError(err.Error())
 			}
 		}
 

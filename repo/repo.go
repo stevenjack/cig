@@ -28,7 +28,7 @@ func Check(root string, path string, output_channel chan output.Payload, wg *syn
 		modified := len(modified_lines) - 1
 
 		if err != nil {
-			output_channel <- output.Error(err.Error())
+			output_channel <- output.FatalError(err.Error())
 		}
 
 		changes := []string{}
