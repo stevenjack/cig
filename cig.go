@@ -8,7 +8,7 @@ import (
 	"github.com/stevenjack/cig/output"
 )
 
-const version string = "0.1.3"
+const version string = "0.1.4"
 
 func main() {
 	var output_channel = make(chan output.Payload)
