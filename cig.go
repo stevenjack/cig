@@ -23,7 +23,7 @@ func main() {
 		repo_list, err := app.Config(config_path)
 
 		if err != nil {
-			output_channel <- output.Error(err.Error())
+			output_channel <- output.FatalError(err.Error())
 		}
 
 		app.Handle(repo_list, project_type, filter, output_channel)

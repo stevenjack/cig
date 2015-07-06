@@ -11,10 +11,21 @@ import (
 type Payload struct {
 	Message string
 	Error   bool
+	Fatal   bool
 }
 
 func (p *Payload) IsError() {
 	p.Error = true
+}
+
+func (p *Payload) IsFatal() {
+	p.Fatal = true
+}
+
+func FatalError(message string) Payload {
+	payload := Error(message)
+	payload.IsFatal()
+	return payload
 }
 
 func Error(message string) Payload {
@@ -25,7 +36,7 @@ func Error(message string) Payload {
 }
 
 func Print(message string) Payload {
-	return Payload{message, false}
+	return Payload{message, false, false}
 }
 
 func ApplyColour(message string, outputType string) string {
@@ -45,7 +56,7 @@ func Wait(channel chan Payload) {
 	for {
 		entry := <-channel
 		fmt.Println(entry.Message)
-		if entry.Error {
+		if entry.Fatal {
 			os.Exit(-1)
 		}
 	}
