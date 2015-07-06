@@ -55,7 +55,7 @@ chmod +x /usr/local/bin/cig
 
 Download the following binary:
 
-* [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.4/cig_windows_amd64.exe)
+* [64bit](https://github.com/stevenjack/cig/releases/download/v0.1.4/cig_windows_x86_64.exe)
 
 Once you have the binary, run it via your cmd prompt:
 
