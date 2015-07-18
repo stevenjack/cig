@@ -13,6 +13,7 @@ import (
 )
 
 func Check(root string, path string, output_channel chan output.Payload, wg *sync.WaitGroup) {
+	defer wg.Done()
 	exists, err := Exists(filepath.Join(path, ".git"))
 
 	if err != nil {
@@ -69,7 +70,6 @@ func Check(root string, path string, output_channel chan output.Payload, wg *syn
 		}
 
 	}
-	wg.Done()
 }
 
 func Exists(path string) (bool, error) {
