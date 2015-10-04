@@ -11,28 +11,28 @@ import (
 const version string = "0.1.5"
 
 func main() {
-	var output_channel = make(chan output.Payload)
+        var outputChannel = make(chan output.Payload)
 
-	go output.Wait(output_channel)
-	cli_wrapper := main_app()
+        go output.Wait(outputChannel)
+        cliWrapper := mainApp()
 
-	cli_wrapper.Action = func(context *cli.Context) {
-		config_path := context.String("config-path")
-		project_type := context.String("type")
+        cliWrapper.Action = func(context *cli.Context) {
+                configPath := context.String("config-path")
+                projectType := context.String("type")
 		filter := context.String("filter")
-		repo_list, err := app.Config(config_path)
+                repoList, err := app.Config(configPath)
 
 		if err != nil {
-			output_channel <- output.FatalError(err.Error())
+                        outputChannel <- output.FatalError(err.Error())
 		}
 
-		app.Handle(repo_list, project_type, filter, output_channel)
+                app.Handle(repoList, projectType, filter, outputChannel)
 	}
 
-	cli_wrapper.Run(os.Args)
+        cliWrapper.Run(os.Args)
 }
 
-func main_app() *cli.App {
+func mainApp() *cli.App {
 	app := cli.NewApp()
 	app.Name = "cig"
 	app.Usage = "cig (Can I go?) checks all your git repos to see if they're in the state you want them to be"

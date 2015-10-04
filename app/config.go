@@ -10,30 +10,30 @@ import (
 	"github.com/stevenjack/cig/Godeps/_workspace/src/gopkg.in/yaml.v2"
 )
 
-func Config(config_path string) (map[string]string, error) {
-	repo_list := make(map[string]string)
-	home_dir, err := homedir.Dir()
+func Config(configPath string) (map[string]string, error) {
+        repoList := make(map[string]string)
+        homeDir, err := homedir.Dir()
 
-	if config_path != "" {
-		home_dir = config_path
+        if configPath != "" {
+                homeDir = configPath
 	}
 
 	if err != nil {
 		return nil, errors.New("Couldn't determine home directory")
 	}
 
-	path := filepath.Join(home_dir, ".cig.yaml")
+        path := filepath.Join(homeDir, ".cig.yaml")
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Can't find config '%s'", path))
 	}
 
-	err = yaml.Unmarshal([]byte(data), &repo_list)
+        err = yaml.Unmarshal([]byte(data), &repoList)
 
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Problem parsing '%s', please check documentation", path))
 	}
 
-	return repo_list, nil
+        return repoList, nil
 }
