@@ -1,8 +1,16 @@
-dev:
+common: &common
   build: .
-  command: gox
   working_dir: /go/src/github.com/stevenjack/cig
+
+dev:
+  <<: *common
+  command: go run cig.go --cp /go/src/github.com/stevenjack/cig
   volumes:
     - .:/go/src/github.com/stevenjack/cig
     - ~/Projects:/projects
-    - ~/.cig.yaml:/root/.cig.yaml
+
+build:
+  <<: *common
+  command: gox
+  volumes:
+    - .:/go/src/github.com/stevenjack/cig
