@@ -1,8 +1,8 @@
 VERISON ?= ""
 TYPE ?= ""
 
-PHONY: bump
-SILENT: bump
+PHONY: bump run build
+SILENT: bump run build
 
 current_version:
 	$(eval CURRENT_VERSION:=$(shell cat VERSION))
@@ -28,3 +28,9 @@ push:
 	git push origin --tags
 
 bump: update_files commit tag
+
+run:
+	docker-compose run dev
+
+build:
+	docker-compose run build
