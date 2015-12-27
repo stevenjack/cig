@@ -1,6 +1,6 @@
 #!/bin/bash
 
-go test
+go test */**_test.go
 
 if [[ $TRAVIS_TAG =~ ^v[0-9\.]+ ]]; then
   go get github.com/mitchellh/gox
