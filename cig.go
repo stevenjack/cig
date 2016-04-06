@@ -11,25 +11,25 @@ import (
 const version string = "0.1.5"
 
 func main() {
-        var outputChannel = make(chan output.Payload)
+	var outputChannel = make(chan output.Payload)
 
-        go output.Wait(outputChannel)
-        cliWrapper := mainApp()
+	go output.Wait(outputChannel)
+	cliWrapper := mainApp()
 
-        cliWrapper.Action = func(context *cli.Context) {
-                configPath := context.String("config-path")
-                projectType := context.String("type")
+	cliWrapper.Action = func(context *cli.Context) {
+		configPath := context.String("config-path")
+		projectType := context.String("type")
 		filter := context.String("filter")
-                repoList, err := app.Config(configPath)
+		repoList, err := app.Config(configPath)
 
 		if err != nil {
-                        outputChannel <- output.FatalError(err.Error())
+			outputChannel <- output.FatalError(err.Error())
 		}
 
-                app.Handle(repoList, projectType, filter, outputChannel)
+		app.Handle(repoList, projectType, filter, outputChannel)
 	}
 
-        cliWrapper.Run(os.Args)
+	cliWrapper.Run(os.Args)
 }
 
 func mainApp() *cli.App {

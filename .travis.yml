@@ -7,8 +7,19 @@ deploy:
     secure: doUo3FJLvbkPrwadQKp6EqwU2D7/yhAdXmDXhBBEFC8uIoo99C1CN/97ajkTf7GW53ZUOACTsAPaEiE2d3MVBheFN4Rza+8QXqHXOOoLl/7NjP/Tm/BYFlIqFuYgGbDy3HPU2cAqSwwXPKhMByZ1ydsw7bazQfH3KuXTcTLs6to=
   file:
     - cig_darwin_x86_64
+    - cig_darwin_x86_64.md5
+    - cig_darwin_x86_64.sha1
+    - cig_darwin_x86_64.sha256
     - cig_linux_x86_64
+    - cig_linux_x86_64.md5
+    - cig_linux_x86_64.sha1
+    - cig_linux_x86_64.sha256
     - cig_windows_x86_64.exe
+    - cig_windows_x86_64.exe.md5
+    - cig_windows_x86_64.exe.sha1
+    - cig_windows_x86_64.exe.sha256
+  before_deploy: 
+    - ./build/checksum.sh
   skip_cleanup: true
   on:
     tags: true
