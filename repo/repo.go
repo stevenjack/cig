@@ -8,19 +8,34 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"io"
 
 	"github.com/stevenjack/cig/output"
 )
 
 func Check(root string, path string, outputChannel chan output.Payload, wg *sync.WaitGroup) {
 	defer wg.Done()
-	exists, err := Exists(filepath.Join(path, ".git"))
+	metadatapath := filepath.Join(path, ".git")
+	exists, err := Exists(metadatapath)
 
 	if err != nil {
 		return
 	}
 
 	if exists {
+                headfile, err := os.Open(filepath.Join(metadatapath, "HEAD"))
+                if err != nil {
+                        return
+                }
+                defer headfile.Close()
+
+		buf := make([]byte, 1024)
+		c, err := headfile.Read(buf)
+		if ( err != nil && err != io.EOF ) || c < 5 {
+			return
+		}
+		detachedhead := !strings.HasPrefix(string(buf), "ref:")
+
                 modifiedFiles := exec.Command("git", "status", "--porcelain")
                 modifiedFiles.Dir = path
 
@@ -36,6 +51,9 @@ func Check(root string, path string, outputChannel chan output.Payload, wg *sync
 
                 if modified > 0 && modifiedLines[0] != "" {
 			changes = append(changes, output.ApplyColour(fmt.Sprintf(" M(%d)", modified), "red"))
+			if detachedhead {
+				changes = append(changes, output.ApplyColour(" D", "red"))
+			}
 		}
 
 		branch := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
@@ -53,7 +71,7 @@ func Check(root string, path string, outputChannel chan output.Payload, wg *sync
 		rstdout, err := remote.Output()
                 remoteRef := strings.TrimSpace(string(rstdout[:]))
 
-                if err == nil && remoteRef != localRef {
+                if !detachedhead && err == nil && remoteRef != localRef {
 			changes = append(changes, output.ApplyColour(" P", "blue"))
 		}
 
