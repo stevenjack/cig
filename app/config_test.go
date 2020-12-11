@@ -5,8 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/stevenjack/cig/app"
 )
 
 func TestMapReturnedFromCigYaml(t *testing.T) {
@@ -36,5 +34,5 @@ func TestMalformedYamlRasiesError(t *testing.T) {
 func config(config_path string) (map[string]string, error) {
 	cwd, _ := os.Getwd()
 	path := filepath.Join(cwd, "..", "test", "fixtures", config_path)
-	return app.Config(path)
+	return Config(path)
 }

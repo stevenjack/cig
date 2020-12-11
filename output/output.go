@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/stevenjack/cig/Godeps/_workspace/src/github.com/fatih/color"
+	"github.com/fatih/color"
 )
 
 type Payload struct {
